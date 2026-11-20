@@ -1,0 +1,3 @@
+/Users/venghour/Documents/Coding/Games/C_games/office_gang_2/server/build/CMakeFiles/office_gang_server.dir
+/Users/venghour/Documents/Coding/Games/C_games/office_gang_2/server/build/CMakeFiles/edit_cache.dir
+/Users/venghour/Documents/Coding/Games/C_games/office_gang_2/server/build/CMakeFiles/rebuild_cache.dir
