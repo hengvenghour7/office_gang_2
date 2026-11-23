@@ -1,30 +1,24 @@
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
 #include <raylib.h>
+#include <stdbool.h>
 
 typedef struct Character {
-    Rectangle dimension;
-    Texture2D Texture;
-    int columnStart;
-    int columnEnd;
-    int row;
-    int rowEnd;
+    Texture2D texture;
+    Rectangle source;
+    Vector2 worldPosition; /* top-left position, in world-image pixels */
+    float speed;           /* world-image pixels per second */
+    float animationTimer;
+    int animationFrame;
+    int facingRow;
+    bool moving;
 } Character;
 
-Character createCharacter (Rectangle dimension, const char * imgSrc, int columnEnd) {
-    struct Character character = {
-        .dimension = dimension,
-        .Texture = LoadTexture(imgSrc),
-        .columnStart = 0,
-        .columnEnd = columnEnd,
-        .row = 0,
-        .rowEnd = 0,
-    };
-    return character;
-}
+Character createCharacter(const char *imagePath, int frameColumn, int frameRow,
+                          Vector2 startPosition);
+void updateCharacter(Character *character, float deltaTime, int worldWidth, int worldHeight);
+void drawCharacter(const Character *character);
+void unloadCharacter(Character *character);
 
-void drawCharacter (Character* character) {
-    DrawRectangle(character->dimension.x, character->dimension.y, 20, 20, RED);
-}
-
-void updateCharacter (Character* character) {
-    
-}
+#endif
