@@ -1,4 +1,5 @@
 #include "game.h"
+#include "raylib.h"
 
 Game createGame()
 {
@@ -15,9 +16,15 @@ Game createGame()
 };
 void gameTick(void* self)
 {
-    float deltaTime = GetFrameTime();
-    Game* game = (Game*)(self);
-    game->world.draw(&game->world);
-    game->player.character.drawing.draw(&game->player.character);
-    game->player.character.tick(&game->player.character, deltaTime);
+    BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        float deltaTime = GetFrameTime();
+        Game* game = (Game*)(self);
+        game->world.draw(&game->world);
+        game->player.character.drawing.draw(&game->player.character);
+        game->player.character.tick(&game->player.character, deltaTime);
+    
+    EndDrawing();
 }

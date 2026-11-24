@@ -6,20 +6,18 @@ int main(void)
     const int screenWidth = 800;
     const int screenHeight = 450;
 
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Office Gangstar 2");
+    SetTargetFPS(60);
+
     Game game = createGame();
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+
+    while (!WindowShouldClose())
     {
-        BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-            game.tick(&game);
-
-        EndDrawing();
+        game.tick(&game);
     }
 
-    CloseWindow();        // Close window and OpenGL context
+    CloseWindow();
 
     return 0;
 }
