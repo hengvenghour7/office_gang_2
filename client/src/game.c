@@ -19,5 +19,5 @@ void gameTick(void* self)
     Game* game = (Game*)(self);
     game->world.draw(&game->world);
     game->player.character.drawing.draw(&game->player.character);
-    game->player.character.tick(&game->player.character);
+    game->player.character.tick(&game->player.character, deltaTime);
 }

@@ -1,0 +1,3 @@
+int TILE_SIZE = 16;
+int CHARACTER_TILE_SIZE = 32;
+int SCALE = 2;

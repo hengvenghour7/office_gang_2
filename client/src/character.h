@@ -23,10 +23,15 @@ typedef struct Character {
     Rectangle characterScreenPos;
     enum CharacterState characterState;
     enum CharacterDirectionState characterDirectionState; 
-    void (*tick)(void* self);
-    void (*updateAnimation)(void* self);
+    void (*tick)(void* self, float deltaTime);
+    void (*updateAnimation)(void* self, bool isUpdateTime);
+    float updateTime;
+    float maxUpdateTime;
     int initialColumn;
+    int currentColumn;
     int maxColumn;
+    int cropWidth;
+    int cropHeight;
     int row;
 } Character;
 typedef struct Player {
@@ -39,8 +44,8 @@ typedef struct AIPlayer {
 Character createCharacter(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
 void drawCharacter(void* self);
 Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
-void playerTick(void* self);
-void updateCharacterAnimation(void* self);
+void playerTick(void* self, float deltaTime);
+void updateCharacterAnimation(void* self, bool isUpdateTime);
 Vector2 getPlayerPos(Vector2 pos);
 
 #endif

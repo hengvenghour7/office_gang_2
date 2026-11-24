@@ -1,4 +1,5 @@
 #include "world.h"
+#include "globalVar.h"
 
 World createWorld(const char* textureSrc, Player* player)
 {
@@ -11,5 +12,5 @@ void drawWorld(void* self)
 {
     World* world = (World*) self;
     
-    DrawTextureEx(world->texture, (Vector2) {0, 0}, 0, 1, WHITE);
+    DrawTextureEx(world->texture, (Vector2) {0, 0}, 0, SCALE, WHITE);
 }
