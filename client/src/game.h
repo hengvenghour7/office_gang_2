@@ -1,6 +1,17 @@
-#ifndef GAME_H
-#define GAME_H
+#include "character.h"
+typedef struct Game {
+    Player player;
+    void (* tick)(void);
+} Game;
 
-void runGame(void);
+Game createGame()
+{
+    Game game = {
+        
+    };
+    return game;
+};
+void gameTick()
+{
 
-#endif
+};

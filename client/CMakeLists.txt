@@ -17,6 +17,10 @@ file(GLOB SOURCES CONFIGURE_DEPENDS
 # Create client executable
 add_executable(office_gang_2 ${SOURCES})
 
+set_target_properties(office_gang_2 PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
+)
+
 # Include header directories
 target_include_directories(office_gang_2 PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
