@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include "game.h"
 
+#include "multiplayer/multiplayer.h"
+
 int main(void)
 {
     const int screenWidth = 800;
@@ -11,6 +13,8 @@ int main(void)
     SetTargetFPS(60);
 
     Game game = createGame();
+
+    if (game.isMultiplayer) initMultiplayer();
 
     while (!WindowShouldClose())
     {

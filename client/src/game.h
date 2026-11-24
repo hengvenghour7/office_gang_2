@@ -8,6 +8,7 @@ enum GameState {
     Shop,
 };
 typedef struct Game {
+    bool isMultiplayer;
     Player player;
     World world;
     void (* tick)(void* self);
@@ -15,3 +16,5 @@ typedef struct Game {
 
 Game createGame();
 void gameTick(void* self);
+void gameMultiplayerTick(void* self);
+void gameSinglePlayerTick(void* self);

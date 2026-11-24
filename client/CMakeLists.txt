@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 find_package(raylib REQUIRED)
 
 # Collect client source files
-file(GLOB SOURCES CONFIGURE_DEPENDS
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
 )
 

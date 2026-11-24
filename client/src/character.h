@@ -5,6 +5,7 @@
 #include "drawing.h"
 
 enum CharacterState {
+    Attacking,
     Idle,
     Walking,
     Running
