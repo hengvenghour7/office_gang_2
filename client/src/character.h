@@ -24,6 +24,10 @@ typedef struct Character {
     enum CharacterState characterState;
     enum CharacterDirectionState characterDirectionState; 
     void (*tick)(int deltaTime);
+    void (*updateAnimation)(void* self);
+    int initialColumn;
+    int maxColumn;
+    int row;
 } Character;
 typedef struct Player {
     Character character;
@@ -34,5 +38,7 @@ typedef struct AIPlayer {
 Character createCharacter(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
 void drawCharacter(void* self);
 Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
+void playerTick();
+void updateCharacterAnimation(void* self);
 
 #endif

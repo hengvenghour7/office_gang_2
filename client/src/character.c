@@ -27,3 +27,20 @@ void drawCharacter(void* self)
         (Vector2){0, 0}, 0, WHITE
     );
 };
+void updateCharacterAnimation(void* self)
+{
+    Character* character = (Character*) self;
+    switch (character->characterState)
+    {
+    case Idle:
+        character->row = 0;
+        character->maxColumn = 5;
+        break;
+    case Walking:
+        character->row = 1;
+        character->maxColumn = 8;
+        break;
+    default:
+        break;
+    }
+}
