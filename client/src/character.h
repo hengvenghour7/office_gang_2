@@ -32,14 +32,7 @@ typedef struct AIPlayer {
     Character character;
 } AIPlayer;
 Character createCharacter(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
-void drawCharacter(Character* character)
-{
-    DrawTexturePro(
-        character->texture, 
-        (Rectangle) {0, 0, 20, 20}, 
-        (Rectangle) {0, 0, 20, 20},
-        (Vector2){0, 0}, 0, WHITE
-    );
-};
+void drawCharacter(void* self);
+Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
 
 #endif

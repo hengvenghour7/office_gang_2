@@ -1,17 +1,10 @@
 #include "character.h"
+#include "world.h"
 typedef struct Game {
     Player player;
-    void (* tick)(void);
+    World world;
+    void (* tick)(void* self);
 } Game;
 
-Game createGame()
-{
-    Game game = {
-        
-    };
-    return game;
-};
-void gameTick()
-{
-
-};
+Game createGame();
+void gameTick(void* self);
