@@ -8,7 +8,7 @@
 #define WINDOW_WIDTH 960
 #define WINDOW_HEIGHT 640
 #define WORLD_TILE_SIZE 16.0f
-#define CAMERA_ZOOM 3.0f
+#define CAMERA_ZOOM 2.0f
 
 static const char *findResource(const char *name, char *buffer, size_t bufferSize) {
     const char *prefixes[] = {"resources/", "../resources/", "client/resources/"};
@@ -20,7 +20,7 @@ static const char *findResource(const char *name, char *buffer, size_t bufferSiz
 }
 
 void runGame(void) {
-    SetConfigFlags(FLAG_VSYNC_HINT);
+    SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Office Gang 2");
     if (!IsWindowReady()) return;
 

@@ -89,8 +89,8 @@ void drawCharacter(const Character *character) {
     Rectangle destination = {
         .x = character->worldPosition.x,
         .y = character->worldPosition.y,
-        .width = WORLD_TILE_SIZE * 2,
-        .height = WORLD_TILE_SIZE * 2,
+        .width = WORLD_TILE_SIZE * 1.5,
+        .height = WORLD_TILE_SIZE * 1.5,
     };
     DrawTexturePro(character->texture, character->source, destination,
                    (Vector2){0}, 0.0f, WHITE);
