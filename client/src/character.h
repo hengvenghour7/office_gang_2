@@ -23,7 +23,7 @@ typedef struct Character {
     Rectangle characterScreenPos;
     enum CharacterState characterState;
     enum CharacterDirectionState characterDirectionState; 
-    void (*tick)(int deltaTime);
+    void (*tick)(void* self);
     void (*updateAnimation)(void* self);
     int initialColumn;
     int maxColumn;
@@ -31,6 +31,7 @@ typedef struct Character {
 } Character;
 typedef struct Player {
     Character character;
+    Vector2 (*getPlayerPos)(Vector2 pos);
 } Player;
 typedef struct AIPlayer {
     Character character;
@@ -38,7 +39,8 @@ typedef struct AIPlayer {
 Character createCharacter(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
 void drawCharacter(void* self);
 Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle dimension);
-void playerTick();
+void playerTick(void* self);
 void updateCharacterAnimation(void* self);
+Vector2 getPlayerPos(Vector2 pos);
 
 #endif

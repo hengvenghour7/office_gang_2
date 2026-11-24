@@ -15,6 +15,7 @@ Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle di
     Player player = {
         .character = createCharacter(textureSrc, srcDimension, dimension)
     };
+    player.character.tick = playerTick;
     return player;
 }
 void drawCharacter(void* self)
@@ -23,7 +24,7 @@ void drawCharacter(void* self)
     DrawTexturePro(
         character->texture,
         (Rectangle) {0, 0, 20, 20},
-        (Rectangle) {0, 80, 20, 20},
+        (Rectangle) {character->characterPos.x, 80, 20, 20},
         (Vector2){0, 0}, 0, WHITE
     );
 };
@@ -42,5 +43,18 @@ void updateCharacterAnimation(void* self)
         break;
     default:
         break;
+    }
+
+}
+Vector2 getPlayerPos(Vector2 pos)
+{
+    return pos;
+}
+void playerTick(void* self)
+{
+    Player* player = (Player*) self;
+    if (IsKeyDown(KEY_D))
+    {
+        player->character.characterPos.x += 1;
     }
 }
