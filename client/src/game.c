@@ -7,7 +7,7 @@ Game createGame()
         .player = createPlayer(
             "../resources/character.png", 
             (Rectangle){1, 1, 20, 20},
-            (Rectangle){1, 1, 20, 20}
+            (Vector2){10, 10}
         ),
         .world = createWorld("../resources/center_world.png", &game.player)
     };

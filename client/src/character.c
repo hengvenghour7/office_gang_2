@@ -1,29 +1,32 @@
 #include "character.h"
 #include "raymath.h"
+#include "globalVar.h"
 
-Character createCharacter (const char* textureSrc, Rectangle srcDimension, Rectangle dimension) {
+Character createCharacter (const char* textureSrc, Rectangle srcDimension, Vector2 pos) {
     Character character = {
         .drawing.draw = drawCharacter,
         .texture = LoadTexture(textureSrc),
-        .srcDimension = srcDimension,
-        .characterPos = dimension,
+        .characterPos = pos,
         .initialColumn = 0,
         .currentColumn = character.initialColumn,
         .row = 0,
         .cropWidth = 256/8,
         .cropHeight = 128/4,
+        .characterScreenPos = (Vector2){GetScreenWidth()*0.5 + character.cropWidth*0.5, GetScreenHeight()*0.5},
         .characterState = Idle,
         .updateAnimation = updateCharacterAnimation,
         .updateTime = 0,
         .maxUpdateTime = 0.1,
+        .getPos = getCharacterPos
     };
     return character;
 };
 
-Player createPlayer(const char* textureSrc, Rectangle srcDimension, Rectangle dimension)
+Player createPlayer(const char* textureSrc, Rectangle srcDimension, Vector2 pos)
 {
     Player player = {
-        .character = createCharacter(textureSrc, srcDimension, dimension)
+        .character = createCharacter(textureSrc, srcDimension, pos),
+        .getPlayerPosForRender = getPlayerPosForRender
     };
     player.character.tick = playerTick;
     return player;
@@ -34,7 +37,7 @@ void drawCharacter(void* self)
     DrawTexturePro(
         character->texture,
         (Rectangle) {character->currentColumn * character->cropWidth, character->row * character->cropHeight, character->cropWidth, character->cropHeight},
-        (Rectangle) {character->characterPos.x, character->characterPos.y, 20, 20},
+        (Rectangle) {character->characterScreenPos.x, character->characterScreenPos.y, character->cropWidth * CHARACTER_SCALE, character->cropHeight * CHARACTER_SCALE},
         (Vector2){0, 0}, 0, WHITE
     );
 };
@@ -61,9 +64,17 @@ void updateCharacterAnimation(void* self, bool isUpdateTime)
         character->currentColumn = character->initialColumn;
     }
 }
-Vector2 getPlayerPos(Vector2 pos)
+Vector2 getCharacterPos(void * self)
 {
-    return pos;
+    Player* player = (Player*) self;
+    return player->character.characterPos;
+}
+Vector2 getPlayerPosForRender(Player* player)
+{
+    return Vector2Scale(
+        Vector2Subtract(player->character.characterPos, player->character.characterScreenPos), 
+        -1.0
+    );
 }
 void playerTick(void* self, float deltaTime)
 {
@@ -95,9 +106,9 @@ void playerTick(void* self, float deltaTime)
     {
         direction.y = 1;
     }
-    player->character.characterPos.x += direction.x;
-    player->character.characterPos.y += direction.y;
-    if (direction.y != 0 || direction.x != 0) {
+    Vector2 normalizeDirection = Vector2Normalize(direction);
+    player->character.characterPos = Vector2Add(player->character.characterPos, normalizeDirection);
+    if (normalizeDirection.y != 0 || normalizeDirection.x != 0) {
         player->character.characterState = Walking;
     }
     else {
