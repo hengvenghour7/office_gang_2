@@ -1,5 +1,6 @@
 #include "character.h"
 #include "world.h"
+#include "../../include/network_protocol.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -10,14 +11,13 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-#define MAX_PLAYERS 20
 typedef struct ServerPackage {
     struct addrinfo hints;
     struct addrinfo *servinfo;
     struct sockaddr_storage their_addr;
     socklen_t addr_size;
     int socketfd;
-    char buf[100];
+    char buf[sizeof(GameState)];
 } ServerPackage;
 enum GameState {
     MainMenu,
@@ -41,5 +41,4 @@ void singlePlayerTick(void* self);
 void initMultiplayer(Game* game);
 void multiPlayerTick(Game* game);
 void endMultiplayer(Game* game);
-const char * getGameDataAsString(Game* game);
 void addGamePlayer(Game* game, int onlineID, int x, int y);

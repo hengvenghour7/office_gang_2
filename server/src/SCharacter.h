@@ -22,10 +22,8 @@ typedef struct SCharacter {
     SVector2 pos;
     enum SCharacterState characterState;
     enum SCharacterDirection characterDirection;
-    char* (*getCharacterDataAsString)(struct SCharacter* character);
 } SCharacter;
 
-char* getCharacterDataAsString(SCharacter* character);
 SCharacter createCharacter(int onlineID, SVector2 pos, bool isActive);
 
 #endif

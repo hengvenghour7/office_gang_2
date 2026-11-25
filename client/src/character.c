@@ -68,6 +68,10 @@ void updateCharacterAnimation(void* self, bool isUpdateTime)
     default:
         break;
     }
+    if (character->currentColumn > character->maxColumn)
+    {
+        character->currentColumn = character->initialColumn;
+    }
     if (!isUpdateTime) return;
     character->currentColumn++;
     if (character->currentColumn > character->maxColumn)

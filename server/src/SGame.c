@@ -1,8 +1,7 @@
 #include "SGame.h"
-#include <networkHelpers.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <network_protocol.h>
 
 SGame createGame ()
 {
@@ -18,23 +17,15 @@ SGame createGame ()
     
     return game;
 }
-char* getGameDataAsString(SGame* game)
+GameState getGameState(SGame* game, int your_id)
 {
-    char* s = malloc(2048);
-    s[0] = '\0';
-    int index = 0;
-    while (index < MAX_PLAYERS)
-    {
-        SCharacter* p = &game->allPlayers[index];
-        addIntToString(s, p->onlineID);
-        strcat(s, ",");
-        addIntToString(s, p->pos.x);
-        strcat(s, ",");
-        addIntToString(s, p->pos.y);
-        strcat(s, ",");
-        index++;
+    GameState state = { .type = MSG_GAME_STATE, .your_id = your_id };
+    for (int i = 0; i < MAX_PLAYERS; i++) if (game->allPlayers[i].isActive) {
+        NetworkPlayer* p = &state.players[state.player_count++];
+        p->id = game->allPlayers[i].onlineID;
+        p->x = game->allPlayers[i].pos.x; p->y = game->allPlayers[i].pos.y;
     }
-    return s;
+    return state;
 }
 void addPlayer(SGame* game, int onlineID)
 {

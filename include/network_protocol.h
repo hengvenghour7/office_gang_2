@@ -4,14 +4,16 @@
 #include <stdint.h>
 
 #define SERVER_PORT 5000
-#define MAX_PLAYERS 16
+#define MAX_PLAYERS 20
 
+#define MSG_HELLO 0u
 #define MSG_PLAYER_UPDATE 1u
 #define MSG_GAME_STATE 2u
 
 typedef struct
 {
     uint32_t type;
+    int32_t id;
     float x;
     float y;
 } PlayerUpdate;

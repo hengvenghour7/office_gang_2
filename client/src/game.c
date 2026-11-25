@@ -1,14 +1,17 @@
 #include "game.h"
 #include "raylib.h"
+#include "raymath.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <stdlib.h>
+#include <math.h>
 
 Game createGame()
 {
     Game game = {
         .isMultiplayer = true,
+        .onlineID = 0,
+        .serverPackage = { .socketfd = -1 },
         .tick = gameTick,
         .otherPlayers = {0},
         .player = createPlayer(
@@ -43,6 +46,11 @@ void gameTick(void* self)
             {
                 if (game->otherPlayers[i].isActive)
                 {
+                    Character* character = &game->otherPlayers[i].player.character;
+                    character->updateTime += deltaTime;
+                    bool advanceFrame = character->updateTime >= character->maxUpdateTime;
+                    if (advanceFrame) character->updateTime -= character->maxUpdateTime;
+                    character->updateAnimation(character, advanceFrame);
                     drawOnlinePlayer(&game->player, &game->otherPlayers[i]);
                 }
                 i++;
@@ -63,59 +71,68 @@ void initMultiplayer(Game* game)
     serverPackage->hints.ai_socktype = SOCK_DGRAM;
 
     status = getaddrinfo("localhost", "4950", &serverPackage->hints, &serverPackage->servinfo);
+    if (status != 0) { fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status)); return; }
 
     serverPackage->socketfd = socket(
         serverPackage->servinfo->ai_family, 
         serverPackage->servinfo->ai_socktype, 
         serverPackage->servinfo->ai_protocol
     );
-    connect(serverPackage->socketfd, 
+    if (serverPackage->socketfd < 0) { perror("socket"); freeaddrinfo(serverPackage->servinfo); serverPackage->servinfo = NULL; return; }
+    if (connect(serverPackage->socketfd,
         serverPackage->servinfo->ai_addr, 
         serverPackage->servinfo->ai_addrlen
-    );
+    ) < 0) { perror("connect"); close(serverPackage->socketfd); serverPackage->socketfd = -1; freeaddrinfo(serverPackage->servinfo); serverPackage->servinfo = NULL; return; }
+    freeaddrinfo(serverPackage->servinfo); serverPackage->servinfo = NULL;
 
-    send(serverPackage->socketfd, "initial_connection", 20, 0);
-    int numBytes = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
-    // serverPackage->buf[numBytes] = '\0';
+    uint32_t hello = MSG_HELLO;
+    send(serverPackage->socketfd, &hello, sizeof hello, 0);
+    struct timeval timeout = { .tv_sec = 1, .tv_usec = 0 };
+    setsockopt(serverPackage->socketfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
+    int numBytes = recv(serverPackage->socketfd, serverPackage->buf, sizeof serverPackage->buf, 0);
+    if (numBytes == sizeof(GameState)) {
+        GameState state; memcpy(&state, serverPackage->buf, sizeof state);
+        game->onlineID = state.your_id;
+    }
+    timeout.tv_sec = 0; timeout.tv_usec = 0;
+    setsockopt(serverPackage->socketfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
     int flags = fcntl(serverPackage->socketfd, F_GETFL, 0);
     fcntl(serverPackage->socketfd, F_SETFL, flags | O_NONBLOCK);
-
-    printf("testttting game socket %s\n", serverPackage->buf);
-}
-const char* getGameDataAsString(Game* game)
-{
 
 }
 void multiPlayerTick(Game* game)
 {
     ServerPackage* serverPackage = &game->serverPackage;
-    send(
-        serverPackage->socketfd,
-        "banana",
-        strlen("banana"),
-        0
-    );
-    int bytesReceived = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
-    if (bytesReceived > 0) {
-        serverPackage->buf[bytesReceived] = '\0';
-        char* str = malloc(100);
-        strcpy(str, serverPackage->buf);
-        char* myPtr = strtok(str, ",");
-        while (myPtr != NULL)
-        {
-            int temp_id, x, y;
-            temp_id = atoi(myPtr);
-            myPtr = strtok(NULL, ",");
-            if (myPtr == NULL) break;
-            x = atoi(myPtr);
-            myPtr = strtok(NULL, ",");
-            if (myPtr == NULL) break;
-            y = atoi(myPtr);
-            myPtr = strtok(NULL, ",");
-            addGamePlayer(game, temp_id, x, y);
+    if (serverPackage->socketfd < 0) return;
+    PlayerUpdate update = { MSG_PLAYER_UPDATE, game->onlineID, game->player.character.characterPos.x, game->player.character.characterPos.y };
+    send(serverPackage->socketfd, &update, sizeof update, 0);
+    GameState state;
+    int bytesReceived = recv(serverPackage->socketfd, &state, sizeof state, 0);
+    if (bytesReceived == sizeof state && state.type == MSG_GAME_STATE) {
+        game->onlineID = state.your_id;
+        uint32_t count = state.player_count < MAX_PLAYERS ? state.player_count : MAX_PLAYERS;
+        for (uint32_t i = 0; i < count; i++) {
+            NetworkPlayer* p = &state.players[i];
+            if (p->id == game->onlineID) continue;
+            addGamePlayer(game, p->id, (int)p->x, (int)p->y);
+            for (int j = 0; j < MAX_PLAYERS; j++) if (game->otherPlayers[j].isActive && game->otherPlayers[j].onlineID == p->id) {
+                Character* character = &game->otherPlayers[j].player.character;
+                Vector2 previousPos = character->characterPos;
+                Vector2 updatedPos = {p->x, p->y};
+                Vector2 movement = Vector2Subtract(updatedPos, previousPos);
+                character->characterPos = updatedPos;
+                if (fabsf(movement.x) > 0.001f || fabsf(movement.y) > 0.001f) {
+                    character->characterState = Walking;
+                    if (fabsf(movement.x) > fabsf(movement.y))
+                        character->characterDirectionState = movement.x < 0 ? Left : Right;
+                    else
+                        character->characterDirectionState = movement.y < 0 ? Up : Down;
+                } else {
+                    character->characterState = Idle;
+                }
+                break;
+            }
         }
-        // printf("%s\n", str);
-        free(str);
     } else if (bytesReceived < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         perror("recv");
     }
@@ -123,21 +140,22 @@ void multiPlayerTick(Game* game)
 void endMultiplayer(Game* game)
 {
     ServerPackage* serverPackage = &game->serverPackage;
-    close(serverPackage->socketfd);
+    if (serverPackage->socketfd >= 0) close(serverPackage->socketfd);
 }
 void addGamePlayer(Game* game, int onlineID, int x, int y)
 {
     int i = 0;
     while (i < MAX_PLAYERS)
     {
-        if (game->onlineID == onlineID || game->otherPlayers[i].onlineID == onlineID) return;
+        if (game->onlineID == onlineID) return;
+        if (game->otherPlayers[i].isActive && game->otherPlayers[i].onlineID == onlineID) return;
         if (!game->otherPlayers[i].isActive)
         {
             game->otherPlayers[i] = (OnlinePlayer){
                 .isActive = true,
                 .onlineID = onlineID,
                 .player = createPlayer(
-                    "../resources/character.png", 
+                    TextFormat("%s../Resources/character.png", GetApplicationDirectory()),
                     (Rectangle){50, 100, 20, 20},
                     (Vector2){x, y}
                 )

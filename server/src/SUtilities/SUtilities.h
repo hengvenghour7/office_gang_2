@@ -2,8 +2,8 @@
 #define SUTILITIES_H
 
 typedef struct SVector2 {
-    int x;
-    int y;
+    float x;
+    float y;
 } SVector2;
 typedef struct SRectangle {
     int x;
