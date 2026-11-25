@@ -54,5 +54,6 @@ void playerTick(void* self, float deltaTime);
 void updateCharacterAnimation(void* self, bool isUpdateTime);
 Vector2 getCharacterPos(void* self);
 Vector2 getPlayerPosForRender(Player* player);
+void drawOnlinePlayer(Player* player, OnlinePlayer* onlinePlayer);
 
 #endif

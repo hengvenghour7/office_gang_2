@@ -41,6 +41,17 @@ void drawCharacter(void* self)
         (Vector2){0, 0}, 0, WHITE
     );
 };
+void drawOnlinePlayer(Player* player, OnlinePlayer* onlinePlayer)
+{
+    Character* character = &onlinePlayer->player.character;
+    Vector2 drawPos = Vector2Add(getPlayerPosForRender(player), character->characterPos);
+    DrawTexturePro(
+        character->texture,
+        (Rectangle) {character->currentColumn * character->cropWidth, character->row * character->cropHeight, character->cropWidth, character->cropHeight},
+        (Rectangle) {drawPos.x, drawPos.y, character->cropWidth * CHARACTER_SCALE, character->cropHeight * CHARACTER_SCALE},
+        (Vector2){0, 0}, 0, WHITE
+    );
+}
 void updateCharacterAnimation(void* self, bool isUpdateTime)
 {
     Character* character = (Character*) self;

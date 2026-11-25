@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+
+#define MAX_PLAYERS 20
 typedef struct ServerPackage {
     struct addrinfo hints;
     struct addrinfo *servinfo;
@@ -28,6 +30,7 @@ typedef struct Game {
     int onlineID;
     ServerPackage serverPackage;
     Player player;
+    OnlinePlayer otherPlayers[MAX_PLAYERS];
     World world;
     void (* tick)(void* self);
 } Game;
@@ -39,3 +42,4 @@ void initMultiplayer(Game* game);
 void multiPlayerTick(Game* game);
 void endMultiplayer(Game* game);
 const char * getGameDataAsString(Game* game);
+void addGamePlayer(Game* game, int onlineID, int x, int y);

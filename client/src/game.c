@@ -2,18 +2,21 @@
 #include "raylib.h"
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 
 Game createGame()
 {
     Game game = {
         .isMultiplayer = true,
         .tick = gameTick,
+        .otherPlayers = {0},
         .player = createPlayer(
-            "../resources/character.png", 
+            TextFormat("%s../Resources/character.png", GetApplicationDirectory()), 
             (Rectangle){50, 100, 20, 20},
             (Vector2){500, 500}
         ),
-        .world = createWorld("../resources/center_world.png", &game.player)
+        .world = createWorld(TextFormat("%s../Resources/center_world.png", GetApplicationDirectory()), &game.player)
     };
     
     return game;
@@ -33,6 +36,18 @@ void gameTick(void* self)
         game->world.draw(&game->world);
         game->player.character.drawing.draw(&game->player.character);
         game->player.character.tick(&game->player.character, deltaTime);
+        if (game->isMultiplayer)
+        {
+            int i = 0;
+            while (i < MAX_PLAYERS)
+            {
+                if (game->otherPlayers[i].isActive)
+                {
+                    drawOnlinePlayer(&game->player, &game->otherPlayers[i]);
+                }
+                i++;
+            }
+        }
     
     EndDrawing();
 }
@@ -83,7 +98,24 @@ void multiPlayerTick(Game* game)
     int bytesReceived = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
     if (bytesReceived > 0) {
         serverPackage->buf[bytesReceived] = '\0';
-        printf("%s\n", serverPackage->buf);
+        char* str = malloc(100);
+        strcpy(str, serverPackage->buf);
+        char* myPtr = strtok(str, ",");
+        while (myPtr != NULL)
+        {
+            int temp_id, x, y;
+            temp_id = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            if (myPtr == NULL) break;
+            x = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            if (myPtr == NULL) break;
+            y = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            addGamePlayer(game, temp_id, x, y);
+        }
+        // printf("%s\n", str);
+        free(str);
     } else if (bytesReceived < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         perror("recv");
     }
@@ -92,4 +124,27 @@ void endMultiplayer(Game* game)
 {
     ServerPackage* serverPackage = &game->serverPackage;
     close(serverPackage->socketfd);
+}
+void addGamePlayer(Game* game, int onlineID, int x, int y)
+{
+    int i = 0;
+    while (i < MAX_PLAYERS)
+    {
+        if (game->onlineID == onlineID || game->otherPlayers[i].onlineID == onlineID) return;
+        if (!game->otherPlayers[i].isActive)
+        {
+            game->otherPlayers[i] = (OnlinePlayer){
+                .isActive = true,
+                .onlineID = onlineID,
+                .player = createPlayer(
+                    "../resources/character.png", 
+                    (Rectangle){50, 100, 20, 20},
+                    (Vector2){x, y}
+                )
+            };
+            printf("new player added %d\n", onlineID);
+            return;
+        }
+        i++;
+    }
 }
