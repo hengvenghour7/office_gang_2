@@ -1,3 +1,6 @@
+#ifndef SUTILITIES_H
+#define SUTILITIES_H
+
 typedef struct SVector2 {
     int x;
     int y;
@@ -8,3 +11,5 @@ typedef struct SRectangle {
     int width;
     int height;
 } SRectangle;
+
+#endif
