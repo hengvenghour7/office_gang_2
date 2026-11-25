@@ -8,7 +8,7 @@ typedef struct SGame {
     SCharacter allPlayers[MAX_PLAYERS];
 } SGame;
 SGame createGame();
-void addPlayer();
+void addPlayer(SGame* game, int onlineID);
 char* getGameDataAsString(SGame* game);
 
 #endif

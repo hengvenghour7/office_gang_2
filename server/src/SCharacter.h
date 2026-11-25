@@ -26,6 +26,6 @@ typedef struct SCharacter {
 } SCharacter;
 
 char* getCharacterDataAsString(SCharacter* character);
-SCharacter createCharacter(int onlineID, SVector2 pos);
+SCharacter createCharacter(int onlineID, SVector2 pos, bool isActive);
 
 #endif

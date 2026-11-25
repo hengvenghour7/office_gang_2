@@ -12,7 +12,7 @@ SGame createGame ()
     int index = 0;
     while (index < MAX_PLAYERS)
     {
-        game.allPlayers[index] = createCharacter(0, (SVector2){0, 0});
+        game.allPlayers[index] = createCharacter(0, (SVector2){0, 0}, false);
         index++;
     }
     
@@ -35,4 +35,17 @@ char* getGameDataAsString(SGame* game)
         index++;
     }
     return s;
+}
+void addPlayer(SGame* game, int onlineID)
+{
+    int i = 0;
+    while (i < MAX_PLAYERS)
+    {
+        if (!game->allPlayers[i].isActive)
+        {
+            game->allPlayers[i] = createCharacter(onlineID, (SVector2){onlineID * 20, 0}, true);
+            return;
+        }
+        i++;
+    }
 }

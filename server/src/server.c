@@ -25,7 +25,7 @@ int main (void) {
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
     char buf[100];
-    int onlineID = 0;
+    int onlineID = 1;
 
     SGame game = createGame();
 
@@ -38,9 +38,6 @@ int main (void) {
     bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
     int flags = fcntl(sockfd, F_GETFL, 0);
     fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-    char* gameData = getGameDataAsString(&game);
-    printf("%s \n", gameData);
-    free(gameData);
     while (1)
     {
         /* code */
@@ -54,9 +51,15 @@ int main (void) {
             );
             if (strcmp(buf, "initial_connection") == 0) {
                 printf("new connection established\n");
+                addPlayer(&game, onlineID);
+                onlineID++;
+
+                char* gameData = getGameDataAsString(&game);
+                printf("%s \n", gameData);
                 buf[0] = ' ';
             }
-            bytes_sent = sendto(sockfd, "goat from the server", 20, 0, 
+            char* gameData2 = getGameDataAsString(&game);
+            bytes_sent = sendto(sockfd, gameData2, 100, 0, 
                 (struct sockaddr *)&their_addr,
                 addr_size
             );
