@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <networkHelpers.h>
 
+#include <fcntl.h>
 #include <stdlib.h>
 
 int status;
@@ -20,28 +21,35 @@ int main (void) {
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_socktype = SOCK_DGRAM;
+    char buf[100];
 
-    status = getaddrinfo("localhost", "3490", &hints, &servinfo);
+    status = getaddrinfo("localhost", "4950", &hints, &servinfo);
     if (status != 0) {
         fprintf(stderr,"getaddrinfo: %s\n", gai_strerror(status));
     }
     int sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
     
     bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
-    listen (sockfd, 10);
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
     while (1)
     {
         /* code */
-        int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
-        if (!fork()) {
-            printf("waiting\n");
+        // int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+        addr_size = sizeof their_addr;
+        printf("waiting\n");
             int yes = 1;
             int bytes_sent;
-        
-            bytes_sent = send(new_fd, "goat from the server", 20, 0);
-        }
-        printf("next connection");
+            recvfrom(sockfd, buf, 100 -1, 0,
+                (struct sockaddr *)&their_addr,
+                &addr_size
+            );
+            bytes_sent = sendto(sockfd, "goat from the server", 20, 0, 
+                (struct sockaddr *)&their_addr,
+                addr_size
+            );
+        printf("next connection %s\n", buf);
     }
     
     return 0;

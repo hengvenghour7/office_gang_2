@@ -16,6 +16,7 @@ enum SCharacterDirection {
     Down,
 };
 typedef struct SCharacter {
+    int id;
     SVector2 pos;
     enum SCharacterState characterState;
     enum SCharacterDirection characterDirection;

@@ -1,8 +1,6 @@
 #include <raylib.h>
 #include "game.h"
 
-#include "multiplayer/multiplayer.h"
-
 int main(void)
 {
     const int screenWidth = 800;
@@ -14,13 +12,14 @@ int main(void)
 
     Game game = createGame();
 
-    if (game.isMultiplayer) initMultiplayer();
+    if (game.isMultiplayer) initMultiplayer(&game);
 
     while (!WindowShouldClose())
     {
         game.tick(&game);
     }
 
+    endMultiplayer(&game);
     CloseWindow();
 
     return 0;

@@ -42,6 +42,11 @@ typedef struct Player {
 typedef struct AIPlayer {
     Character character;
 } AIPlayer;
+typedef struct OnlinePlayer {
+    int onlineID;
+    bool isActive;
+    Player player;
+} OnlinePlayer;
 Character createCharacter(const char* textureSrc, Rectangle srcDimension, Vector2 pos);
 void drawCharacter(void* self);
 Player createPlayer(const char* textureSrc, Rectangle srcDimension, Vector2 Pos);
