@@ -23,7 +23,6 @@ void gameTick(void* self)
     Game* game = (Game*)(self);
     if (game->isMultiplayer)
     {
-        gameMultiplayerTick(game);
         multiPlayerTick(game);
     }
     BeginDrawing();
@@ -36,10 +35,6 @@ void gameTick(void* self)
         game->player.character.tick(&game->player.character, deltaTime);
     
     EndDrawing();
-}
-void gameMultiplayerTick(void* self)
-{
-    Game* game = (Game*)self;
 }
 
 void initMultiplayer(Game* game)
@@ -64,7 +59,7 @@ void initMultiplayer(Game* game)
         serverPackage->servinfo->ai_addrlen
     );
 
-    send(serverPackage->socketfd, "Hello from Client", 20, 0);
+    send(serverPackage->socketfd, "initial_connection", 20, 0);
     int numBytes = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
     // serverPackage->buf[numBytes] = '\0';
     int flags = fcntl(serverPackage->socketfd, F_GETFL, 0);

@@ -5,7 +5,7 @@
 
 void addIntToString(char* desString, int copyNum)
 {
-    char* temp = malloc(50);
+    char temp[50];
     sprintf(temp, "%d", copyNum);
     strcat(desString, temp);
 };

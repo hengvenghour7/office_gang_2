@@ -34,8 +34,7 @@ typedef struct Game {
 
 Game createGame();
 void gameTick(void* self);
-void gameMultiplayerTick(void* self);
-void gameSinglePlayerTick(void* self);
+void singlePlayerTick(void* self);
 void initMultiplayer(Game* game);
 void multiPlayerTick(Game* game);
 void endMultiplayer(Game* game);

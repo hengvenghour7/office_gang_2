@@ -1,6 +1,7 @@
 #ifndef SCHARACTER_H
 #define SCHARACTER_H
 
+#include <stdbool.h>
 #include "SUtilities/SUtilities.h"
 
 enum SCharacterState {
@@ -16,7 +17,8 @@ enum SCharacterDirection {
     Down,
 };
 typedef struct SCharacter {
-    int id;
+    int onlineID;
+    bool isActive;
     SVector2 pos;
     enum SCharacterState characterState;
     enum SCharacterDirection characterDirection;
@@ -24,6 +26,6 @@ typedef struct SCharacter {
 } SCharacter;
 
 char* getCharacterDataAsString(SCharacter* character);
-SCharacter createCharacter();
+SCharacter createCharacter(int onlineID, SVector2 pos);
 
 #endif

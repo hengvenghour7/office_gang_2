@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-SCharacter createCharacter()
+SCharacter createCharacter(int onlineID, SVector2 pos)
 {
     SCharacter character = {
-        .pos = (SVector2){0, 0},
+        .onlineID = onlineID,
+        .isActive = false,
+        .pos = pos,
     };
     return character;
 };
