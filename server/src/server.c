@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include "SUtilities/SHelpers.h"
+#include <networkHelpers.h>
 
 #include <stdlib.h>
 
@@ -18,36 +18,31 @@ socklen_t addr_size;
 
 int main (void) {
 
-    // memset(&hints, 0, sizeof hints);
-    // hints.ai_family = AF_UNSPEC;
-    // hints.ai_socktype = SOCK_STREAM;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
-    // status = getaddrinfo("localhost", "3490", &hints, &servinfo);
-    // if (status != 0) {
-    //     fprintf(stderr,"getaddrinfo: %s\n", gai_strerror(status));
-    // }
-    // int sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+    status = getaddrinfo("localhost", "3490", &hints, &servinfo);
+    if (status != 0) {
+        fprintf(stderr,"getaddrinfo: %s\n", gai_strerror(status));
+    }
+    int sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
     
-    // bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
-    // listen (sockfd, 10);
-    // while (1)
-    // {
-    //     /* code */
-    //     int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
-    //     if (!fork()) {
-    //         printf("waiting\n");
-    //         int yes = 1;
-    //         int bytes_sent;
+    bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen);
+    listen (sockfd, 10);
+    while (1)
+    {
+        /* code */
+        int new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+        if (!fork()) {
+            printf("waiting\n");
+            int yes = 1;
+            int bytes_sent;
         
-    //         bytes_sent = send(new_fd, "goat from the server", 20, 0);
-    //     }
-    //     printf("next connection");
-    // }
-    int a = 9803;
-    char* text1 = malloc(50);
-    addIntToString(text1, a);
-    addIntToString(text1, 34122);
+            bytes_sent = send(new_fd, "goat from the server", 20, 0);
+        }
+        printf("next connection");
+    }
     
-    printf("%s\n",text1);
     return 0;
 }

@@ -12,6 +12,7 @@ find_package(raylib REQUIRED)
 # Collect client source files
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../include/*.c"
 )
 
 # Create client executable
