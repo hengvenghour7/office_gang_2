@@ -83,6 +83,40 @@ void initMultiplayer(Game* game)
     fcntl(serverPackage->socketfd, F_SETFL, flags | O_NONBLOCK);
 
     printf("testttting game socket %s\n", serverPackage->buf);
+
+    struct timeval tv;
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+
+    setsockopt(
+        serverPackage->socketfd,
+        SOL_SOCKET,
+        SO_RCVTIMEO,
+        &tv,
+        sizeof(tv)
+    );
+    int bytesReceived = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
+    if (bytesReceived > 0) {
+        serverPackage->buf[bytesReceived] = '\0';
+        char* str = malloc(100);
+        strcpy(str, serverPackage->buf);
+        char* myPtr = strtok(str, ",");
+        while (myPtr != NULL)
+        {
+            int temp_id, x, y;
+            temp_id = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            if (myPtr == NULL) break;
+            x = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            if (myPtr == NULL) break;
+            y = atoi(myPtr);
+            myPtr = strtok(NULL, ",");
+            addGamePlayer(game, temp_id, x, y);
+            // updatePlayers(game, temp_id, x, y);
+        }
+        printf("yyy %s\n", str);
+        }
 }
 char* getGameDataAsString(Game* game)
 {
@@ -101,7 +135,7 @@ void multiPlayerTick(Game* game)
     ServerPackage* serverPackage = &game->serverPackage;
     char* gameData = getGameDataAsString(game);
     int Bytessend = send(serverPackage->socketfd, gameData, 100 -1, 0);
-    printf("data %s \n", gameData);
+    // printf("data %s \n", gameData);
     free(gameData);
     
     int bytesReceived = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
@@ -124,7 +158,7 @@ void multiPlayerTick(Game* game)
             addGamePlayer(game, temp_id, x, y);
             // updatePlayers(game, temp_id, x, y);
         }
-        printf("%s\n", str);
+        // printf("%s\n", str);
         free(str);
     } else if (bytesReceived < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         perror("recv");

@@ -58,33 +58,39 @@ int main (void) {
                 char* gameData = getGameDataAsString(&game);
                 printf("%s \n", gameData);
                 buf[0] = ' ';
-            }
-            else
-            {
-                char* str = malloc(100);
-                strcpy(str, buf);
-                char* myPtr = strtok(str, ",");
-                while (myPtr != NULL)
-                {
-                    int temp_id, x, y;
-                    temp_id = atoi(myPtr);
-                    myPtr = strtok(NULL, ",");
-                    if (myPtr == NULL) break;
-                    x = atoi(myPtr);
-                    myPtr = strtok(NULL, ",");
-                    if (myPtr == NULL) break;
-                    y = atoi(myPtr);
-                    myPtr = strtok(NULL, ",");
-                    updateSPlayers(&game, temp_id, x, y);
-                }
-                // free(str);
-                printf("received playerrr %s \n", buf);
-            }
-            char* gameData2 = getGameDataAsString(&game);
-            bytes_sent = sendto(sockfd, gameData2, 100, 0, 
+                bytes_sent = sendto(sockfd, gameData, 100, 0, 
                 (struct sockaddr *)&their_addr,
                 addr_size
             );
+            }
+            else
+            {
+                // char* str = malloc(100);
+                // strcpy(str, buf);
+                // char* myPtr = strtok(str, ",");
+                // while (myPtr != NULL)
+                // {
+                //     int temp_id, x, y;
+                //     temp_id = atoi(myPtr);
+                //     myPtr = strtok(NULL, ",");
+                //     if (myPtr == NULL) break;
+                //     x = atoi(myPtr);
+                //     myPtr = strtok(NULL, ",");
+                //     if (myPtr == NULL) break;
+                //     y = atoi(myPtr);
+                //     myPtr = strtok(NULL, ",");
+                //     updateSPlayers(&game, temp_id, x, y);
+                // }
+                // // free(str);
+                // // printf("received playerrr %s \n", buf);
+                // char* gameData2 = getGameDataAsString(&game);
+                // bytes_sent = sendto(sockfd, gameData2, 100, 0, 
+                //     (struct sockaddr *)&their_addr,
+                //     addr_size
+                // );
+                // printf("dd %s \n", gameData2);
+                // free(gameData2);
+            }
     }
     
     return 0;
