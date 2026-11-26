@@ -2,23 +2,58 @@
 #define CHARACTER_H
 
 #include <raylib.h>
-#include <stdbool.h>
+#include "drawing.h"
 
+enum CharacterState {
+    Attacking,
+    Idle,
+    Walking,
+    Running
+};
+enum CharacterDirectionState {
+    Left,
+    Right,
+    Up,
+    Down,
+};
 typedef struct Character {
+    Drawing drawing;
     Texture2D texture;
-    Rectangle source;
-    Vector2 worldPosition; /* top-left position, in world-image pixels */
-    float speed;           /* world-image pixels per second */
-    float animationTimer;
-    int animationFrame;
-    int facingRow;
-    bool moving;
+    Vector2 characterPos;
+    Vector2 characterScreenPos;
+    enum CharacterState characterState;
+    enum CharacterDirectionState characterDirectionState; 
+    void (*tick)(void* self, float deltaTime);
+    void (*updateAnimation)(void* self, bool isUpdateTime);
+    Vector2 (*getPos)(void* self);
+    float updateTime;
+    float maxUpdateTime;
+    int initialColumn;
+    int currentColumn;
+    int maxColumn;
+    int cropWidth;
+    int cropHeight;
+    int row;
 } Character;
-
-Character createCharacter(const char *imagePath, int frameColumn, int frameRow,
-                          Vector2 startPosition);
-void updateCharacter(Character *character, float deltaTime, int worldWidth, int worldHeight);
-void drawCharacter(const Character *character);
-void unloadCharacter(Character *character);
+typedef struct Player {
+    Character character;
+    Vector2 (*getPlayerPosForRender)(struct Player* player);
+} Player;
+typedef struct AIPlayer {
+    Character character;
+} AIPlayer;
+typedef struct OnlinePlayer {
+    int onlineID;
+    bool isActive;
+    Player player;
+} OnlinePlayer;
+Character createCharacter(const char* textureSrc, Rectangle srcDimension, Vector2 pos);
+void drawCharacter(void* self);
+Player createPlayer(const char* textureSrc, Rectangle srcDimension, Vector2 Pos);
+void playerTick(void* self, float deltaTime);
+void updateCharacterAnimation(void* self, bool isUpdateTime);
+Vector2 getCharacterPos(void* self);
+Vector2 getPlayerPosForRender(Player* player);
+void drawOnlinePlayer(Player* player, OnlinePlayer* onlinePlayer);
 
 #endif

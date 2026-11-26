@@ -1,0 +1,4 @@
+#define TILE_SIZE 16
+#define CHARACTER_TILE_SIZE 32
+#define SCALE 3
+#define CHARACTER_SCALE (SCALE * 0.5)
