@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <networkHelpers.h>
+
 Game createGame()
 {
     Game game = {
@@ -82,19 +84,26 @@ void initMultiplayer(Game* game)
 
     printf("testttting game socket %s\n", serverPackage->buf);
 }
-const char* getGameDataAsString(Game* game)
+char* getGameDataAsString(Game* game)
 {
-
+    char* s = malloc(2048);
+    s[0] = '\0';
+    int index = 0;
+    addIntToString(s, game->onlineID);
+    strcat(s,",");
+    addIntToString(s, game->player.character.characterPos.x);
+    strcat(s,",");
+    addIntToString(s, game->player.character.characterPos.y);
+    return s;
 }
 void multiPlayerTick(Game* game)
 {
     ServerPackage* serverPackage = &game->serverPackage;
-    send(
-        serverPackage->socketfd,
-        "banana",
-        strlen("banana"),
-        0
-    );
+    char* gameData = getGameDataAsString(game);
+    int Bytessend = send(serverPackage->socketfd, gameData, 100 -1, 0);
+    printf("data %s \n", gameData);
+    free(gameData);
+    
     int bytesReceived = recv(serverPackage->socketfd, serverPackage->buf, 100 -1, 0);
     if (bytesReceived > 0) {
         serverPackage->buf[bytesReceived] = '\0';
@@ -113,12 +122,14 @@ void multiPlayerTick(Game* game)
             y = atoi(myPtr);
             myPtr = strtok(NULL, ",");
             addGamePlayer(game, temp_id, x, y);
+            // updatePlayers(game, temp_id, x, y);
         }
-        // printf("%s\n", str);
+        printf("%s\n", str);
         free(str);
     } else if (bytesReceived < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
         perror("recv");
     }
+    
 }
 void endMultiplayer(Game* game)
 {
@@ -146,5 +157,26 @@ void addGamePlayer(Game* game, int onlineID, int x, int y)
             return;
         }
         i++;
+    }
+}
+void updatePlayers(Game* game, int onlineID, int x, int y)
+{
+    if (game->onlineID == onlineID)
+    {
+        game->player.character.characterPos.x = x;
+        game->player.character.characterPos.y = y;
+        return;
+    }
+    int i = 0;
+    while (i < MAX_PLAYERS)
+    {
+        OnlinePlayer* currentP = &game->otherPlayers[i];
+        if (!currentP->isActive || currentP->onlineID != onlineID){
+            i++;
+            continue;
+        }
+        currentP->player.character.characterPos.x = x;
+        currentP->player.character.characterPos.y = y;
+        return;
     }
 }

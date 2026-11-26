@@ -49,14 +49,36 @@ int main (void) {
                 (struct sockaddr *)&their_addr,
                 &addr_size
             );
+            
             if (strcmp(buf, "initial_connection") == 0) {
                 printf("new connection established\n");
-                addPlayer(&game, onlineID);
+                addSPlayer(&game, onlineID);
                 onlineID++;
-
+                
                 char* gameData = getGameDataAsString(&game);
                 printf("%s \n", gameData);
                 buf[0] = ' ';
+            }
+            else
+            {
+                char* str = malloc(100);
+                strcpy(str, buf);
+                char* myPtr = strtok(str, ",");
+                while (myPtr != NULL)
+                {
+                    int temp_id, x, y;
+                    temp_id = atoi(myPtr);
+                    myPtr = strtok(NULL, ",");
+                    if (myPtr == NULL) break;
+                    x = atoi(myPtr);
+                    myPtr = strtok(NULL, ",");
+                    if (myPtr == NULL) break;
+                    y = atoi(myPtr);
+                    myPtr = strtok(NULL, ",");
+                    updateSPlayers(&game, temp_id, x, y);
+                }
+                // free(str);
+                printf("received playerrr %s \n", buf);
             }
             char* gameData2 = getGameDataAsString(&game);
             bytes_sent = sendto(sockfd, gameData2, 100, 0, 

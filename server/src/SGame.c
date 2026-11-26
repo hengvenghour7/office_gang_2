@@ -36,7 +36,7 @@ char* getGameDataAsString(SGame* game)
     }
     return s;
 }
-void addPlayer(SGame* game, int onlineID)
+void addSPlayer(SGame* game, int onlineID)
 {
     int i = 0;
     while (i < MAX_PLAYERS)
@@ -46,6 +46,21 @@ void addPlayer(SGame* game, int onlineID)
             game->allPlayers[i] = createCharacter(onlineID, (SVector2){onlineID * 20, 0}, true);
             return;
         }
+        i++;
+    }
+}
+void updateSPlayers(SGame* game, int onlineID, int x, int y)
+{
+    int i = 0;
+    while (i < MAX_PLAYERS)
+    {
+        SCharacter* p =  &game->allPlayers[i];
+        if (!p->isActive || p->onlineID != onlineID) {
+            i++;
+            continue;
+        }
+        p->pos.x = x;
+        p->pos.y = y;
         i++;
     }
 }

@@ -41,5 +41,6 @@ void singlePlayerTick(void* self);
 void initMultiplayer(Game* game);
 void multiPlayerTick(Game* game);
 void endMultiplayer(Game* game);
-const char * getGameDataAsString(Game* game);
+char * getGameDataAsString(Game* game);
 void addGamePlayer(Game* game, int onlineID, int x, int y);
+void updatePlayers(Game* game, int onlineID, int x, int y);
